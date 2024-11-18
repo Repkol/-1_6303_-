@@ -12,7 +12,6 @@ HEIGHT = 500
 XH = 0
 YH = 0
 
-
 def bezier(p1, p2, t):  # First order Bessel function
 def bezier(p1: float, p2: float, t: float)-> float:
     """

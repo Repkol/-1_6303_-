@@ -1,15 +1,22 @@
 import turtle as te
 import time
+
 WriteStep = 15  # Sampling times of Bessel function
 Speed = 5
 Width = 600  # Interface width
 Height = 500  # Interface height
 Xh = 0  # Record the handle of the previous Bessel function
 Yh = 0
+WRITE_STEP = 15  # Sampling times of Bessel function
+SPREED = 5
+WIDTH = 600  # Interface width
+HEIGHT = 500  # Interface height
+XH = 0  # Record the handle of the previous Bessel function
+YH = 0
+
+
 def Bezier(p1, p2, t):  # First order Bessel function
     return p1 * (1 - t) + p2 * t
-
-
 def Bezier_2(x1, y1, x2, y2, x3, y3):  # Second-order Bessel function
     te.goto(x1, y1)
     te.pendown()
@@ -18,6 +25,11 @@ def Bezier_2(x1, y1, x2, y2, x3, y3):  # Second-order Bessel function
                    Bezier(x2, x3, t / WriteStep), t / WriteStep)
         y = Bezier(Bezier(y1, y2, t / WriteStep),
                    Bezier(y2, y3, t / WriteStep), t / WriteStep)
+    for t in range(0, WRITE_STEP + 1):
+        x = Bezier(Bezier(x1, x2, t / WRITE_STEP),
+                   Bezier(x2, x3, t / WRITE_STEP), t / WRITE_STEP)
+        y = Bezier(Bezier(y1, y2, t / WRITE_STEP),
+                   Bezier(y2, y3, t / WRITE_STEP), t / WRITE_STEP)
         te.goto(x, y)
     te.penup()
 
@@ -31,6 +43,14 @@ def Bezier_3(x1, y1, x2, y2, x3, y3, x4, y4):  # Third-order Bessel function
     y3 = Height / 2 - y3
     x4 = -Width / 2 + x4
     y4 = Height / 2 - y4  # Coordinate transformation
+    x1 = -WIDTH / 2 + x1
+    y1 = HEIGHT / 2 - y1
+    x2 = -WIDTH / 2 + x2
+    y2 = HEIGHT / 2 - y2
+    x3 = -WIDTH / 2 + x3
+    y3 = HEIGHT / 2 - y3
+    x4 = -WIDTH / 2 + x4
+    y4 = HEIGHT / 2 - y4  # Coordinate transformation
     te.goto(x1, y1)
     te.pendown()
     for t in range(0, WriteStep + 1):
@@ -38,6 +58,11 @@ def Bezier_3(x1, y1, x2, y2, x3, y3, x4, y4):  # Third-order Bessel function
                    Bezier(Bezier(x2, x3, t / WriteStep), Bezier(x3, x4, t / WriteStep), t / WriteStep), t / WriteStep)
         y = Bezier(Bezier(Bezier(y1, y2, t / WriteStep), Bezier(y2, y3, t / WriteStep), t / WriteStep),
                    Bezier(Bezier(y2, y3, t / WriteStep), Bezier(y3, y4, t / WriteStep), t / WriteStep), t / WriteStep)
+    for t in range(0, WRITE_STEP + 1):
+        x = Bezier(Bezier(Bezier(x1, x2, t / WRITE_STEP), Bezier(x2, x3, t / WRITE_STEP), t / WRITE_STEP),
+                   Bezier(Bezier(x2, x3, t / WRITE_STEP), Bezier(x3, x4, t / WRITE_STEP), t / WRITE_STEP), t / WRITE_STEP)
+        y = Bezier(Bezier(Bezier(y1, y2, t / WRITE_STEP), Bezier(y2, y3, t / WRITE_STEP), t / WRITE_STEP),
+                   Bezier(Bezier(y2, y3, t / WRITE_STEP), Bezier(y3, y4, t / WRITE_STEP), t / WRITE_STEP), t / WRITE_STEP)
         te.goto(x, y)
     te.penup()
 
@@ -45,13 +70,16 @@ def Bezier_3(x1, y1, x2, y2, x3, y3, x4, y4):  # Third-order Bessel function
 def Moveto(x, y):  # Move to svg coordinates (x, y)
     te.penup()
     te.goto(-Width / 2 + x, Height / 2 - y)
+    te.goto(-WIDTH / 2 + x, HEIGHT / 2 - y)
 
 
 def line(x1, y1, x2, y2):  # Connect two points under svg coordinates
     te.penup()
     te.goto(-Width / 2 + x1, Height / 2 - y1)
+    te.goto(-WIDTH / 2 + x1, HEIGHT / 2 - y1)
     te.pendown()
     te.goto(-Width / 2 + x2, Height / 2 - y2)
+    te.goto(-WIDTH / 2 + x2, HEIGHT / 2 - y2)
     te.penup()
 
 
@@ -60,16 +88,17 @@ def lineto(dx, dy):  # Connect the current point and the point with relative coo
     te.goto(te.xcor() + dx, te.ycor() - dy)
     te.penup()
 
-
 def Lineto(x, y):  # Connect the current point and svg coordinates (x, y)
     te.pendown()
     te.goto(-Width / 2 + x, Height / 2 - y)
+    te.goto(-WIDTH / 2 + x, HEIGHT / 2 - y)
     te.penup()
 
 
 def Horizontal(x):  # Make the horizontal line with the abscissa x in the svg coordinates
     te.pendown()
     te.setx(x - Width / 2)
+    te.setx(x - WIDTH / 2)
     te.penup()
 
 
@@ -78,8 +107,6 @@ def horizontal(dx):  # Make the horizontal line with relative abscissa dx
     te.pendown()
     te.fd(dx)
     te.penup()
-
-
 def vertical(dy):  # Make the vertical line with the relative ordinate dy
     te.seth(-90)
     te.pendown()
@@ -87,13 +114,15 @@ def vertical(dy):  # Make the vertical line with the relative ordinate dy
     te.penup()
     te.seth(0)
 
-
 def polyline(x1, y1, x2, y2, x3, y3):  # Make a polyline under svg coordinates
     te.penup()
     te.goto(-Width / 2 + x1, Height / 2 - y1)
+    te.goto(-WIDTH / 2 + x1, HEIGHT / 2 - y1)
     te.pendown()
     te.goto(-Width / 2 + x2, Height / 2 - y2)
     te.goto(-Width / 2 + x3, Height / 2 - y3)
+    te.goto(-WIDTH / 2 + x2, HEIGHT / 2 - y2)
+    te.goto(-WIDTH / 2 + x3, HEIGHT / 2 - y3)
     te.penup()
 
 
@@ -101,52 +130,80 @@ def Curveto(x1, y1, x2, y2, x, y):  # Third-order Bezier curve to (x, y)
     te.penup()
     X_now = te.xcor() + Width / 2
     Y_now = Height / 2 - te.ycor()
+    X_now = te.xcor() + WIDTH / 2
+    Y_now = HEIGHT / 2 - te.ycor()
     Bezier_3(X_now, Y_now, x1, y1, x2, y2, x, y)
     global Xh
     global Yh
     Xh = x - x2
     Yh = y - y2
+    global XH
+    global YH
+    XH = x - x2
+    YH = y - y2
 
 
 def curveto_r(x1, y1, x2, y2, x, y):  # Third-order Bezier curve to relative coordinates (x, y)
     te.penup()
     X_now = te.xcor() + Width / 2
     Y_now = Height / 2 - te.ycor()
+    X_now = te.xcor() + WIDTH / 2
+    Y_now = HEIGHT / 2 - te.ycor()
     Bezier_3(X_now, Y_now, X_now + x1, Y_now + y1,
              X_now + x2, Y_now + y2, X_now + x, Y_now + y)
     global Xh
     global Yh
     Xh = x - x2
     Yh = y - y2
+    global XH
+    global YH
+    XH = x - x2
+    YH = y - y2
 
 
 def Smooth(x2, y2, x, y):  # Smooth the third-order Bezier curve to (x, y)
     global Xh
     global Yh
+    global XH
+    global YH
     te.penup()
     X_now = te.xcor() + Width / 2
     Y_now = Height / 2 - te.ycor()
     Bezier_3(X_now, Y_now, X_now + Xh, Y_now + Yh, x2, y2, x, y)
     Xh = x - x2
     Yh = y - y2
+    X_now = te.xcor() + WIDTH / 2
+    Y_now = HEIGHT / 2 - te.ycor()
+    Bezier_3(X_now, Y_now, X_now + XH, Y_now + YH, x2, y2, x, y)
+    XH = x - x2
+    YH = y - y2
 
 
     def smooth_r(x2, y2, x, y):  # Smooth the third-order Bezier curve to relative coordinates (x, y)
         global Xh
         global Yh
+        global XH
+        global YH
         te.penup()
         X_now = te.xcor() + Width / 2
         Y_now = Height / 2 - te.ycor()
         Bezier_3(X_now, Y_now, X_now + Xh, Y_now + Yh,
+        X_now = te.xcor() + WIDTH / 2
+        Y_now = HEIGHT / 2 - te.ycor()
+        Bezier_3(X_now, Y_now, X_now + XH, Y_now + YH,
                  X_now + x2, Y_now + y2, X_now + x, Y_now + y)
         Xh = x - x2
         Yh = y - y2
+        XH = x - x2
+        YH = y - y2
+
     te.tracer(10)
     te.setup(Width, Height, 0, 0)
+    te.setup(WIDTH, HEIGHT, 0, 0)
     te.pensize(1)
     te.speed(Speed)
+    te.speed(SPREED)
     te.penup()
-
     # Layer_2
     time.sleep(20)
     te.color("black", "#F2F2F2")  # Coat
